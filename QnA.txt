@@ -1,0 +1,64 @@
+1. Why does SignupPage use StatefulWidget instead of StatelessWidget?
+
+a StatelessWidget can't change once it's built, it's like a printed paper. But our signup page needs to update when the user types something or when validation errors show up, so we need StatefulWidget because it can rebuild itself. If we used StatelessWidget, the error messages would never appear when you tap Sign Up.
+
+
+2. What is GlobalKey<FormState> and why is it important?
+
+The GlobalKey is basically how the Sign Up button can talk to the Form. Like, the button is outside the Form widget, so without the key it has no idea the Form even exists. With the key, when the button is pressed it calls _formKey.currentState!.validate() and that tells the form to check all the fields at the same time. It has to be global so it can reach across the whole widget tree.
+
+3. Explain the Flutter Widget Tree using the family metaphor.
+
+the widget tree is like a family. MyApp is the great-grandparent, it just starts the app. MaterialApp is the grandparent, it sets the theme and colors for everything. Scaffold is the parent, it gives the page the app bar and the body area. Then Form is the child inside that, and it holds all the text fields. Each one only does its own job and doesn't really know what the others are doing, which keeps the code clean and organized.
+
+4. What is wrong with the current email validation? Write a better version.
+The problem is it only checks if there's an '@' symbol, so something like just '@' or 'hello@' would pass. A real email needs a username before the @, a domain after it, and a dot with a suffix like .com. So I would fix it using a regex pattern like this:
+
+validator: (value) {
+  if (value == null || value.isEmpty) {
+    return 'Please enter your email';
+  }
+  final emailRegex = RegExp(r'^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$');
+  if (!emailRegex.hasMatch(value)) {
+    return 'Please enter a valid email like user@example.com';
+  }
+  return null;
+},
+
+5. What are the limitations of a SnackBar? What else could you use?
+The SnackBar goes away on its own after a few seconds so the user might not even see it. It also can't really show much information. For a signup page it would be better to just navigate to a whole new Welcome screen after the form is submitted, because that clearly shows the user that something happened and they moved on to the next step.
+
+6. What happens to TextEditingControllers when the widget is disposed?
+If we don't dispose them, they stay in memory even after the user leaves the page, which is a memory leak. The fix is to override the dispose method and call .dispose() on each controller before calling super.dispose():
+
+@override
+void dispose() {
+  _nameController.dispose();
+  _emailController.dispose();
+  _passwordController.dispose();
+  super.dispose();
+}
+
+7.How does Flutter's navigation stack work?
+
+Flutter keeps screens in a stack like a pile of cards. Whatever is on top is what you see. When you call Navigator.push() it adds a new screen on top. When you call Navigator.pop() it removes the top screen and goes back to the one below it. So if I push a WelcomeScreen on top of SignupPage, SignupPage is still there underneath. If I don't want the user to go back to the signup screen, I would use Navigator.pushReplacement() instead
+
+Before push:
+[ SignupPage ]  <-- visible
+
+After push:
+[ SignupPage    ]  <-- still in memory
+[ WelcomeScreen ]  <-- now visible
+
+8.. What other security measures would you add beyond obscureText?
+obscureText just hides what you're typing on the screen but the password is still stored as plain text in the app. For a real app I would never log the password anywhere, I would make sure it's sent over HTTPS, and on the server side I would hash it using something like bcrypt before saving it to the database so even if the database gets hacked the real passwords aren't exposed. I'd also add stricter password rules like requiring numbers and symbols
+
+9.. Compare Flutter's form handling to another framework.
+Compared to HTML forms, Flutter makes you write everything yourself because there's no browser to help. In HTML you can do type='email' and the browser validates it for free. In Flutter you have to write your own validator for everything. But one thing Flutter does better is that one validate() call checks all the fields at once, which is pretty convenient. The downside is you also have to remember to dispose your controllers which HTML doesn't make you worry about.
+
+10.10. As a senior developer, what 3 improvements would you make?
+First, I would add the dispose() method because the current code never cleans up the controllers and that causes a memory leak.
+
+Second, I would pull the long build() method apart into smaller methods like _buildNameField() and _buildEmailField() so it's easier to read.
+
+Third, I would move all the error message strings into one constants file so if I need to change a message I only have to do it in one place instead of hunting through the whole file.
