@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
+import '../success_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
