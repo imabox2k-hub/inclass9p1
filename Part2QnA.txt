@@ -1,0 +1,19 @@
+1. Why is it better to build Part 2 by extending the Part 1 form instead of starting the project over from scratch?
+
+Because the Part 1 form already works and is tested. If we start over we might break something that was already fine. It's easier to just add new stuff on top of what's working instead of rewriting everything from scratch
+
+2. Focus: reuse, continuity, and keeping one working baseline.
+How did splitting the app into multiple files make the group work easier or harder?
+
+ It made it easier because everyone had their own file to work on. Like one person does welcome_screen.dart, signup_screen.dart and another does the success_screen.dart and they don't keep overwriting each other's code. If everything was in one big main.dart file it would be a mess trying to merge everyone's changes.
+
+3. Focus: readability, merge conflicts, and responsibility boundaries.
+Why should the success screen replace the signup screen instead of simply pushing on top of it?
+
+If you just push the success screen on top, the signup form is still sitting underneath it. So if the user hits the back button they go right back to the form and could submit again. Using pushReplacement removes the signup screen from the stack completely, so there's no way to accidentally go back and resubmit.
+
+
+4. Focus: navigation stack behavior and preventing accidental resubmission.
+Which part of the user experience made the biggest difference in making the app feel complete?
+
+The loading spinner before the confetti. It makes the app feel like something is actually happening when you tap Sign Up instead of just instantly showing a message. That small delay makes it feel way more like a real app.
